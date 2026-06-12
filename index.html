@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Venus Gurung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0b1e;
+    --fg: #f5f2e8;
+    --muted: #c4b99a;
+    --border: #2e2850;
+    --hover-bg: rgba(255,255,255,0.04);
+    --nav-bg: rgba(13,11,30,0.88);
+    --pad: clamp(1rem, 4vw, 2.5rem);
+  }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* MAIN PIXEL BG */
+  #pixel-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100dvw; height: 100dvh;
+    z-index: 0;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem var(--pad);
+    background: var(--nav-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-size: 0.875rem; font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: none; color: var(--fg);
+  }
+  .nav-links { display: flex; gap: clamp(1rem,3vw,2rem); list-style: none; }
+  .nav-links a {
+    font-size: 0.75rem; color: var(--muted);
+    text-decoration: none; letter-spacing: 0.06em;
+    text-transform: uppercase; transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-links a:hover, .nav-links a:active { color: var(--fg); }
+
+  /* CONTENT */
+  .content { position: relative; z-index: 10; }
+
+  /* HERO */
+  .hero {
+    padding: clamp(6rem,14vw,10rem) var(--pad) clamp(3rem,6vw,6rem);
+    max-width: 860px;
+  }
+  .hero-headline {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(2rem,5.5vw,4rem);
+    font-weight: 400; line-height: 1.25;
+    letter-spacing: -0.01em; color: var(--fg);
+    margin-bottom: 1.5rem;
+  }
+  .hero-headline em { font-style: italic; color: #ffcc77; }
+  .hero-sub {
+    font-size: clamp(0.875rem,2vw,1rem);
+    color: var(--muted); max-width: 480px; line-height: 1.8;
+  }
+  .pixel-badge {
+    display: inline-block; font-size: 0.62rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #ffcc77; border: 1px solid #ffcc7740;
+    padding: 0.25rem 0.6rem; margin-top: 1.75rem;
+  }
+
+  /* SECTION LABEL */
+  .section-label { padding: 0 var(--pad); }
+  .section-label span {
+    font-size: 0.68rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+  }
+
+  /* WORK LIST */
+  .work-list { padding: 0 var(--pad); margin-top: 1rem; }
+  .work-item {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 0.5rem;
+    padding: clamp(1.5rem,3.5vw,2.25rem) 0;
+    border-top: 1px solid var(--border);
+    text-decoration: none; color: inherit;
+    cursor: pointer; position: relative; overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .work-item:last-child { border-bottom: 1px solid var(--border); }
+  .work-item::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--hover-bg);
+    transform: scaleY(0); transform-origin: bottom;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); z-index: 0;
+  }
+  .work-item:hover::before { transform: scaleY(1); }
+  .work-item:active::before { transform: scaleY(1); background: rgba(255,255,255,0.07); }
+  .work-item > * { position: relative; z-index: 1; }
+  .work-title {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(1.5rem,4.5vw,2.5rem);
+    font-weight: 400; line-height: 1.15;
+    letter-spacing: -0.01em; color: var(--fg);
+    margin-bottom: 0.4rem;
+  }
+  .work-desc {
+    font-size: clamp(0.8rem,1.8vw,0.875rem);
+    color: var(--muted); max-width: 520px; line-height: 1.65;
+  }
+  .work-arrow {
+    font-size: 1.2rem; color: var(--muted);
+    transition: transform 0.2s, color 0.2s;
+    padding-left: 1rem;
+  }
+  .work-item:hover .work-arrow,
+  .work-item:active .work-arrow { transform: translate(3px,-3px); color: #ffcc77; }
+
+  /* NEWSLETTER SECTION */
+  .newsletter-wrap {
+    padding: clamp(2.5rem,6vw,4rem) 0 clamp(2rem,5vw,3.5rem);
+    border-top: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  #nl-bg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    pointer-events: none; z-index: 0;
+  }
+  .newsletter-inner { position: relative; z-index: 1; }
+  .newsletter-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 var(--pad); margin-bottom: 1.5rem;
+  }
+  .section-label-inline {
+    font-size: 0.68rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .scroll-btns { display: flex; gap: 0.5rem; }
+  .scroll-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); width: 32px; height: 32px;
+    font-size: 0.9rem; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .scroll-btn:hover, .scroll-btn:active { border-color: #ffcc77; color: #ffcc77; }
+  .newsletter-track {
+    display: flex; gap: 1rem;
+    padding: 0.25rem var(--pad) 1.25rem;
+    overflow-x: auto; scroll-behavior: smooth;
+    scrollbar-width: none; -ms-overflow-style: none;
+    cursor: grab;
+  }
+  .newsletter-track:active { cursor: grabbing; }
+  .newsletter-track::-webkit-scrollbar { display: none; }
+  .nl-card {
+    flex: 0 0 clamp(220px,35vw,280px);
+    background: rgba(10,8,28,0.72);
+    border: 1px solid #3a3060;
+    padding: 1.25rem 1.35rem 1.5rem;
+    text-decoration: none; color: inherit;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    -webkit-tap-highlight-color: transparent;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .nl-card:hover { border-color: #ffcc7766; background: rgba(20,15,45,0.85); }
+  .nl-tag {
+    font-size: 0.6rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #ffcc77; opacity: 0.85;
+  }
+  .nl-name {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(1.1rem,3vw,1.35rem);
+    font-weight: 400; color: var(--fg); line-height: 1.2;
+  }
+  .nl-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.65; flex: 1; }
+  .nl-freq {
+    font-size: 0.65rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #6a5a90; margin-top: 0.25rem;
+  }
+
+  /* ABOUT */
+  .about {
+    padding: clamp(3rem,8vw,6rem) var(--pad);
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem,5vw,4rem); max-width: 860px;
+    border-top: 1px solid var(--border); margin-top: 3rem;
+  }
+  .about h2 {
+    font-size: 0.68rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem;
+  }
+  .about-bio {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(1.05rem,2.5vw,1.25rem);
+    line-height: 1.8; color: var(--fg);
+  }
+  .about-details { display: flex; flex-direction: column; gap: 1.75rem; }
+  .detail-block h3 {
+    font-size: 0.65rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #4a4070; margin-bottom: 0.4rem;
+  }
+  .detail-block p { font-size: 0.875rem; color: var(--muted); line-height: 1.85; }
+  .detail-block a {
+    font-size: 0.875rem; color: var(--muted);
+    text-decoration: none; display: block; line-height: 1.85;
+    transition: color 0.2s; -webkit-tap-highlight-color: transparent;
+  }
+  .detail-block a:hover, .detail-block a:active { color: #ffcc77; }
+
+  /* FOOTER */
+  footer {
+    padding: 1.75rem var(--pad);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 0.5rem;
+  }
+  footer p { font-size: 0.8rem; color: var(--muted); }
+  footer a { font-size: 0.8rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--fg); }
+
+  /* CURSOR */
+  .cursor {
+    width: 8px; height: 8px; background: #ffcc77;
+    border-radius: 0; position: fixed; pointer-events: none;
+    z-index: 9999; transform: translate(-50%,-50%);
+    transition: width 0.15s, height 0.15s, opacity 0.15s;
+  }
+  .cursor.hover { width: 16px; height: 16px; opacity: 0.45; }
+
+  @media (max-width: 600px) {
+    .about { grid-template-columns: 1fr; }
+    .nl-card { flex: 0 0 80vw; }
+    .cursor { display: none; }
+    footer { justify-content: center; text-align: center; }
+  }
+  @media (hover: none) { .cursor { display: none; } }
+</style>
+</head>
+<body>
+
+<canvas id="pixel-bg"></canvas>
+<div class="cursor" id="cursor"></div>
+
+<nav>
+  <a class="nav-logo" href="#">Venus Gurung</a>
+  <ul class="nav-links">
+    <li><a href="#work">Projects</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="mailto:gurungvenus14@gmail.com">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="content">
+
+  <section class="hero">
+    <h1 class="hero-headline">Hey, I am <em>Venus Gurung</em><br>and these are some of my projects.</h1>
+    <p class="hero-sub">I build things at the intersection of data, networks, and design. Always curious, always connecting the dots.</p>
+    <div class="pixel-badge">&#9632; Open to collaborations</div>
+  </section>
+
+  <div class="section-label"><span>Selected Projects</span></div>
+  <div class="work-list" id="work">
+    <a class="work-item" href="#">
+      <div>
+        <div class="work-title">Project Title One</div>
+        <p class="work-desc">A short description of this project. What you built, what problem it solved, and what made it interesting.</p>
+      </div>
+      <div class="work-arrow">&#x2197;</div>
+    </a>
+    <a class="work-item" href="#">
+      <div>
+        <div class="work-title">Project Title Two</div>
+        <p class="work-desc">Another short description. What technologies you used, what you learned, or the impact it had.</p>
+      </div>
+      <div class="work-arrow">&#x2197;</div>
+    </a>
+  </div>
+
+  <!-- NEWSLETTERS -->
+  <div class="newsletter-wrap" id="newsletters">
+    <canvas id="nl-bg"></canvas>
+    <div class="newsletter-inner">
+      <div class="newsletter-header">
+        <span class="section-label-inline">Newsletters I read</span>
+        <div class="scroll-btns">
+          <button class="scroll-btn" id="scrollLeft" aria-label="Scroll left">&#8592;</button>
+          <button class="scroll-btn" id="scrollRight" aria-label="Scroll right">&#8594;</button>
+        </div>
+      </div>
+      <div class="newsletter-track" id="newsletterTrack">
+
+        <a class="nl-card" href="https://tldr.tech" target="_blank" rel="noopener">
+          <div class="nl-tag">Tech</div>
+          <div class="nl-name">TLDR</div>
+          <div class="nl-desc">Byte-sized summaries of the biggest stories in tech, science, and coding. Delivered daily in 5 minutes.</div>
+          <div class="nl-freq">Daily</div>
+        </a>
+
+        <a class="nl-card" href="https://www.morningbrew.com" target="_blank" rel="noopener">
+          <div class="nl-tag">Data and Business</div>
+          <div class="nl-name">Morning Brew</div>
+          <div class="nl-desc">Where business meets culture. Sharp takes on markets, data trends, and the economy without the jargon.</div>
+          <div class="nl-freq">Daily</div>
+        </a>
+
+        <a class="nl-card" href="https://stratechery.com" target="_blank" rel="noopener">
+          <div class="nl-tag">Strategy</div>
+          <div class="nl-name">Stratechery</div>
+          <div class="nl-desc">Ben Thompson's deep analysis of the business and strategy of technology. Essential reading for anyone in tech.</div>
+          <div class="nl-freq">3x weekly</div>
+        </a>
+
+        <a class="nl-card" href="https://www.deeplearning.ai/the-batch/" target="_blank" rel="noopener">
+          <div class="nl-tag">AI and ML</div>
+          <div class="nl-name">The Batch</div>
+          <div class="nl-desc">Andrew Ng's weekly letter on what matters in AI. Research highlights, practical applications, and honest takes on hype.</div>
+          <div class="nl-freq">Weekly</div>
+        </a>
+
+        <a class="nl-card" href="https://dataengineeringweekly.com" target="_blank" rel="noopener">
+          <div class="nl-tag">Data Engineering</div>
+          <div class="nl-name">Data Eng Weekly</div>
+          <div class="nl-desc">Curated reads on pipelines, warehouses, lakehouses, and the tooling that keeps data systems running.</div>
+          <div class="nl-freq">Weekly</div>
+        </a>
+
+        <a class="nl-card" href="https://cassidoo.co/newsletter/" target="_blank" rel="noopener">
+          <div class="nl-tag">Dev</div>
+          <div class="nl-name">rendezvous with cassidoo</div>
+          <div class="nl-desc">A warm, witty weekly from Cassidy Williams. Interview questions, interesting links, and a dash of internet joy.</div>
+          <div class="nl-freq">Weekly</div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <section class="about" id="about">
+    <div>
+      <h2>About</h2>
+      <p class="about-bio">I am drawn to anything data: pipelines, patterns, the stories numbers tell. Networks fascinate me too, the way systems talk to each other and the places where things break down. I am always open to a conversation and genuinely up for collaborations, big or small.</p>
+    </div>
+    <div class="about-details">
+      <div class="detail-block">
+        <h3>Get in touch</h3>
+        <a href="mailto:gurungvenus14@gmail.com">gurungvenus14@gmail.com</a>
+        <a href="tel:+16728330375">+1 (672) 833-0375</a>
+      </div>
+      <div class="detail-block">
+        <h3>Links</h3>
+        <a href="https://www.linkedin.com/in/venus-g-b99459260/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/venusgurung" target="_blank" rel="noopener">GitHub</a>
+        <a href="#">Resume</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>2025 Venus Gurung</p>
+    <a href="mailto:gurungvenus14@gmail.com">gurungvenus14@gmail.com</a>
+  </footer>
+
+</div><!-- /content -->
+
+<script>
+/* ═══════════════════════════════════════════
+   SHARED PIXEL HELPER
+   ═══════════════════════════════════════════ */
+function pixelRect(ctx, x, y, w, h, col) {
+  ctx.fillStyle = col;
+  ctx.fillRect(x, y, w, h);
+}
+
+/* ═══════════════════════════════════════════
+   MAIN BACKGROUND
+   Virtual canvas: 320 x 180
+   Drawn pixelated then scaled to cover screen
+   ═══════════════════════════════════════════ */
+const mainCanvas = document.getElementById('pixel-bg');
+const mainCtx    = mainCanvas.getContext('2d');
+const VW = 320, VH = 180;
+const offscreen  = document.createElement('canvas');
+offscreen.width  = VW;
+offscreen.height = VH;
+const oc = offscreen.getContext('2d');
+
+let SW = 0, SH = 0, SCALE = 1;
+
+function resizeMain() {
+  SW = window.innerWidth;
+  SH = window.innerHeight;
+  mainCanvas.width  = SW;
+  mainCanvas.height = SH;
+  SCALE = Math.max(SW / VW, SH / VH);
+}
+resizeMain();
+window.addEventListener('resize', resizeMain);
+
+function P(x,y,w,h,col){ pixelRect(oc,x,y,w,h,col); }
+
+/* Stars */
+const STARS = Array.from({length:52}, () => ({
+  x: Math.random() * VW,
+  y: Math.random() * 95,
+  p: Math.random() * Math.PI * 2
+}));
+
+/* Fairy lights */
+const FLIGHTS = Array.from({length:15}, (_,i) => ({
+  x: 8 + i * 21,
+  y: 62 + Math.sin(i * 0.7) * 4,
+  p: i * 0.75
+}));
+const FCOLS = ['#ffdd77','#ff9966','#99ddff','#ffaacc','#aaffaa'];
+
+function drawMain(t) {
+  /* sky */
+  P(0,0,VW,100,'#1a1040');
+  P(0,100,VW,32,'#150d30');
+
+  /* stars */
+  STARS.forEach(s => {
+    const f = 0.4 + 0.6 * Math.sin(t * 0.0017 + s.p);
+    const a = Math.floor(f * 255).toString(16).padStart(2,'0');
+    P(Math.floor(s.x), Math.floor(s.y), f > 0.7 ? 2 : 1, f > 0.7 ? 2 : 1, '#ffe8a0' + a);
+  });
+
+  /* moon */
+  P(258,9,18,18,'#fff8d0');
+  P(263,9,10,18,'#1a1040');
+
+  /* wall */
+  P(0,60,VW,72,'#1c1430');
+  for(let x=0;x<VW;x+=20) P(x,60,1,72,'#22183e');
+
+  /* floor */
+  P(0,130,VW,50,'#2a1c10');
+  for(let i=0;i<VW;i+=32) P(i,130,1,50,'#231507');
+  for(let y=130;y<180;y+=12) P(0,y,VW,1,'#231507');
+
+  /* fairy lights */
+  FLIGHTS.forEach((l,i) => {
+    P(l.x, Math.floor(l.y), 2, 1, '#8a7060');
+    const g = 0.5 + 0.5 * Math.sin(t * 0.0025 + l.p);
+    const ga = Math.floor(g * 255).toString(16).padStart(2,'0');
+    P(l.x-1, Math.floor(l.y)-4, 4, 4, FCOLS[i % 5] + ga);
+  });
+
+  /* window */
+  P(10,64,62,58,'#1a1040');
+  [[20,70],[36,76],[52,68],[26,86],[46,89],[16,81],[56,78]].forEach(([sx,sy]) => {
+    const wf = 0.35 + 0.65 * Math.sin(t * 0.0013 + sx);
+    const wa = Math.floor(wf * 200).toString(16).padStart(2,'0');
+    P(sx,sy,2,2,'#ffe8a0'+wa);
+  });
+  P(52,70,12,12,'#fff8c0'); P(55,70,6,12,'#1a1040');
+  P(10,64,62,2,'#5a3a1a'); P(10,120,62,2,'#5a3a1a');
+  P(10,64,2,58,'#5a3a1a'); P(70,64,2,58,'#5a3a1a');
+  P(40,64,2,58,'#5a3a1a'); P(10,91,62,2,'#5a3a1a');
+  P(8,122,66,4,'#7a4f22');
+
+  /* window plant */
+  P(66,110,8,12,'#7a4f22'); P(67,112,6,10,'#6a3d12');
+  P(62,100,4,12,'#2d7a2d'); P(58,95,8,8,'#3d8a3d');
+  P(64,92,8,8,'#3d8a3d'); P(60,89,6,6,'#52a052');
+
+  /* bookshelf */
+  P(242,64,74,66,'#3d2610');
+  P(242,64,74,3,'#5a3a1a'); P(242,100,74,3,'#5a3a1a'); P(242,127,74,3,'#5a3a1a');
+  const B1=[['#c0392b',4],['#e67e22',6],['#27ae60',4],['#2980b9',5],['#8e44ad',4],['#e74c3c',3],['#f39c12',5]];
+  let bx=244; B1.forEach(([c,w])=>{ P(bx,67,w,33,c); bx+=w+1; });
+  const B2=[['#16a085',5],['#d35400',4],['#7f8c8d',6],['#2c3e50',4],['#c0392b',5],['#f1c40f',3]];
+  bx=244; B2.forEach(([c,w])=>{ P(bx,103,w,24,c); bx+=w+1; });
+
+  /* desk */
+  P(80,126,168,6,'#7a4f22'); P(80,125,168,2,'#9a6a32');
+  P(82,132,6,18,'#5a3a1a'); P(240,132,6,18,'#5a3a1a');
+
+  /* lamp flicker */
+  const lf = 0.93 + 0.07 * Math.sin(t * 0.047);
+  const la = Math.floor(lf * 255).toString(16).padStart(2,'0');
+  P(100,100,4,26,'#7a5a2a');
+  P(94,100,16,2,'#c8a44a'); P(92,102,20,8,'#c8a44a');
+  P(88,110,28,8,'#ffcc44'+la); P(86,110,32,4,'#ffee88'+la);
+
+  /* monitor */
+  P(120,88,80,38,'#111');
+  P(122,90,76,34,'#0a1220');
+  P(124,92,72,30,'#0d1b3e');
+  P(126,94,10,3,'#4fc3f7');
+  P(128,99,30,2,'#7986cb'); P(128,104,20,2,'#7986cb');
+  P(128,109,26,2,'#7986cb'); P(128,114,15,2,'#7986cb');
+  P(162,99,20,2,'#a5d6a7'); P(162,104,16,2,'#a5d6a7');
+  P(162,109,12,2,'#ffcc80');
+  if(Math.floor(t/500) % 2 === 0) P(128,117,6,2,'#ffffff');
+  P(156,126,10,4,'#333'); P(149,128,24,2,'#333');
+
+  /* keyboard */
+  P(130,130,60,6,'#2a2a2a');
+  for(let r=0;r<2;r++) for(let c=0;c<12;c++) P(132+c*4,131+r*2,3,1,'#3a3a3a');
+
+  /* mug + steam */
+  P(212,118,16,12,'#e8c87a'); P(213,119,14,10,'#f0d890');
+  P(228,120,4,6,'#e8c87a'); P(228,121,1,4,'#f0d890');
+  const so = Math.floor(t / 220) % 4;
+  [[0,3],[4,1],[8,3]].forEach(([sx,sy],i) => {
+    const sy2 = 112 + sy - ((so+i) % 4) * 2;
+    const sa = Math.floor((1 - ((so+i)%4)/4) * 150).toString(16).padStart(2,'0');
+    P(214+sx, sy2, 2, 3, '#cccccc'+sa);
+  });
+
+  /* ── GINGER CAT ── */
+  /* tail (behind body) */
+  P(190,123,2,7,'#d4823a'); P(190,129,5,2,'#d4823a'); P(194,125,2,5,'#d4823a');
+  P(191,124,1,5,'#b86828'); P(194,126,1,3,'#b86828');
+
+  /* body */
+  P(173,122,18,8,'#d4823a');
+  P(174,123,16,6,'#e0954a');
+  /* body tabby stripes */
+  P(177,122,2,8,'#b86828'); P(182,122,2,8,'#b86828'); P(187,122,2,6,'#b86828');
+
+  /* head */
+  P(173,114,14,10,'#d4823a');
+  P(174,115,12,8,'#e0954a');
+
+  /* ears: two pointy peaks */
+  P(173,112,4,4,'#d4823a'); P(173,110,3,3,'#d4823a'); P(174,108,2,3,'#d4823a');
+  P(183,112,4,4,'#d4823a'); P(183,110,3,3,'#d4823a'); P(184,108,2,3,'#d4823a');
+  /* inner ear pink */
+  P(174,112,2,3,'#e8a0a0'); P(184,112,2,3,'#e8a0a0');
+
+  /* eyes */
+  const blink = Math.floor(t / 2400) % 10 === 0;
+  if(blink) {
+    P(176,119,3,1,'#1a0e00'); P(182,119,3,1,'#1a0e00');
+  } else {
+    P(176,118,3,3,'#1a0e00'); P(182,118,3,3,'#1a0e00');
+    /* eye shine */
+    P(177,118,1,1,'#ffffff'); P(183,118,1,1,'#ffffff');
+  }
+
+  /* nose */
+  P(179,122,3,2,'#e07070');
+  /* whisker dots */
+  P(173,121,1,1,'#f0c890'); P(172,123,1,1,'#f0c890');
+  P(186,121,1,1,'#f0c890'); P(187,123,1,1,'#f0c890');
+
+  /* paws */
+  P(174,129,5,2,'#d4823a'); P(183,129,5,2,'#d4823a');
+  P(174,130,5,1,'#c07030'); P(183,130,5,1,'#c07030');
+
+  /* rug */
+  P(60,148,200,18,'#7a3a3a');
+  for(let i=0;i<7;i++) P(60+i*28,148,2,18,'#9a5a5a');
+  P(60,148,200,2,'#9a5a5a'); P(60,164,200,2,'#9a5a5a');
+  for(let i=0;i<6;i++) P(72+i*30,153,8,8,'#8a4a4a');
+
+  /* scanlines */
+  for(let y=0;y<VH;y+=2) P(0,y,VW,1,'#00000011');
+}
+
+function mainLoop(t) {
+  oc.clearRect(0,0,VW,VH);
+  drawMain(t);
+  mainCtx.clearRect(0,0,SW,SH);
+  mainCtx.imageSmoothingEnabled = false;
+  const dw = VW * SCALE, dh = VH * SCALE;
+  mainCtx.drawImage(offscreen, (SW-dw)/2, (SH-dh)/2, dw, dh);
+  requestAnimationFrame(mainLoop);
+}
+requestAnimationFrame(mainLoop);
+
+
+/* ═══════════════════════════════════════════
+   NEWSLETTER BACKGROUND
+   A cozy pixel library / reading nook scene
+   ═══════════════════════════════════════════ */
+const nlCanvas = document.getElementById('nl-bg');
+const nlCtx    = nlCanvas.getContext('2d');
+const NVW = 320, NVH = 120;
+const nlOff    = document.createElement('canvas');
+nlOff.width = NVW; nlOff.height = NVH;
+const nc = nlOff.getContext('2d');
+
+function NP(x,y,w,h,col){ pixelRect(nc,x,y,w,h,col); }
+
+/* nl stars */
+const NL_STARS = Array.from({length:30}, () => ({
+  x: Math.random() * NVW,
+  y: Math.random() * 55,
+  p: Math.random() * Math.PI * 2
+}));
+
+function resizeNl() {
+  nlCanvas.width  = nlCanvas.offsetWidth  || window.innerWidth;
+  nlCanvas.height = nlCanvas.offsetHeight || 200;
+}
+
+function drawNl(t) {
+  const W = NVW, H = NVH;
+
+  /* deep night sky gradient via banded fills */
+  NP(0,0,W,20,'#120d35');
+  NP(0,20,W,20,'#16103c');
+  NP(0,40,W,15,'#1a1440');
+  NP(0,55,W,65,'#1c1530');
+
+  /* stars */
+  NL_STARS.forEach(s => {
+    const f = 0.3 + 0.7 * Math.sin(t * 0.0016 + s.p);
+    const a = Math.floor(f * 220).toString(16).padStart(2,'0');
+    NP(Math.floor(s.x), Math.floor(s.y), 1, 1, '#ffe8a0'+a);
+  });
+
+  /* moon top-right */
+  NP(290,6,14,14,'#fff8c0'); NP(294,6,7,14,'#120d35');
+
+  /* floor */
+  NP(0,90,W,30,'#241a0e');
+  for(let i=0;i<W;i+=24) NP(i,90,1,30,'#1e1408');
+
+  /* back shelves spanning full width */
+  /* shelf 1 */
+  NP(0,55,W,3,'#4a2e0e');
+  const SB1=[['#c0392b',5],['#e67e22',7],['#27ae60',4],['#2980b9',6],['#8e44ad',5],['#e74c3c',4],['#f39c12',6],['#16a085',5],['#d35400',4],['#7f8c8d',7],['#2c3e50',5],['#c0392b',4],['#f1c40f',6],['#8e44ad',5],['#27ae60',4],['#e67e22',6],['#2980b9',5],['#c0392b',3],['#16a085',5],['#e74c3c',6],['#f39c12',4]];
+  let bxx=2; SB1.forEach(([c,w])=>{ NP(bxx,34,w,22,c); NP(bxx,34,1,22,'#0003'); bxx+=w+1; });
+
+  /* shelf 2 */
+  NP(0,75,W,3,'#4a2e0e');
+  const SB2=[['#2980b9',4],['#c0392b',6],['#27ae60',5],['#f39c12',4],['#8e44ad',7],['#e67e22',5],['#16a085',4],['#d35400',6],['#2c3e50',5],['#f1c40f',4],['#e74c3c',6],['#7f8c8d',5],['#2980b9',4],['#27ae60',6],['#c0392b',5],['#e67e22',4],['#8e44ad',6],['#16a085',5],['#f39c12',4]];
+  bxx=2; SB2.forEach(([c,w])=>{ NP(bxx,58,w,18,c); NP(bxx,58,1,18,'#0003'); bxx+=w+1; });
+
+  /* reading lamp left */
+  const lf2 = 0.92 + 0.08 * Math.sin(t * 0.051 + 1.2);
+  const la2  = Math.floor(lf2 * 255).toString(16).padStart(2,'0');
+  NP(18,78,3,12,'#7a5a2a');
+  NP(12,76,14,2,'#c8a44a'); NP(10,78,18,7,'#c8a44a');
+  NP(6,85,26,6,'#ffcc44'+la2); NP(4,85,30,3,'#ffee88'+la2);
+
+  /* reading lamp right */
+  NP(298,78,3,12,'#7a5a2a');
+  NP(294,76,14,2,'#c8a44a'); NP(292,78,18,7,'#c8a44a');
+  NP(289,85,26,6,'#ffcc44'+la2); NP(287,85,30,3,'#ffee88'+la2);
+
+  /* fairy lights along top */
+  for(let i=0;i<20;i++) {
+    const lx = 6 + i * 16;
+    const ly = 8 + Math.sin(i * 0.9) * 3;
+    NP(lx, Math.floor(ly), 2, 1, '#6a5040');
+    const g = 0.5 + 0.5 * Math.sin(t * 0.0025 + i * 0.9);
+    const ga = Math.floor(g * 255).toString(16).padStart(2,'0');
+    NP(lx-1, Math.floor(ly)-3, 4, 4, FCOLS[i % 5]+ga);
+  }
+
+  /* small ginger cat curled up bottom-center reading nook */
+  /* body curled */
+  NP(148,92,24,10,'#d4823a');
+  NP(149,93,22,8,'#e0954a');
+  NP(151,92,4,10,'#b86828'); NP(159,92,4,10,'#b86828');
+  /* head peeking left */
+  NP(144,86,12,10,'#d4823a');
+  NP(145,87,10,8,'#e0954a');
+  /* cat ears */
+  NP(144,83,3,4,'#d4823a'); NP(144,82,2,2,'#d4823a');
+  NP(152,83,3,4,'#d4823a'); NP(153,82,2,2,'#d4823a');
+  NP(145,84,2,3,'#e8a0a0'); NP(153,84,2,3,'#e8a0a0');
+  /* eyes */
+  const blink2 = Math.floor(t / 3100) % 8 === 0;
+  NP(147,89,2,blink2?1:2,'#1a0e00'); NP(152,89,2,blink2?1:2,'#1a0e00');
+  NP(147,89,1,1,'#ffffff');
+  /* nose */
+  NP(149,92,2,1,'#e07070');
+  /* tail curl */
+  NP(171,93,2,9,'#d4823a'); NP(171,101,6,2,'#d4823a'); NP(175,98,2,4,'#d4823a');
+
+  /* a tiny open book on the floor */
+  NP(158,99,14,6,'#f0e8d0');
+  NP(164,99,1,6,'#9a8060');
+  NP(159,100,4,1,'#c0a870'); NP(159,102,5,1,'#c0a870'); NP(159,104,3,1,'#c0a870');
+  NP(165,100,4,1,'#c0a870'); NP(165,102,5,1,'#c0a870'); NP(165,104,3,1,'#c0a870');
+
+  /* scanlines */
+  for(let y=0;y<H;y+=2) NP(0,y,W,1,'#00000014');
+}
+
+function nlLoop(t) {
+  resizeNl();
+  nc.clearRect(0,0,NVW,NVH);
+  drawNl(t);
+  nlCtx.clearRect(0,0,nlCanvas.width,nlCanvas.height);
+  nlCtx.imageSmoothingEnabled = false;
+  /* stretch to fill the newsletter section width, maintain height */
+  nlCtx.drawImage(nlOff, 0, 0, nlCanvas.width, nlCanvas.height);
+  requestAnimationFrame(nlLoop);
+}
+requestAnimationFrame(nlLoop);
+
+
+/* ═══════════════════════════════════════════
+   CURSOR
+   ═══════════════════════════════════════════ */
+const cur = document.getElementById('cursor');
+let mx=0,my=0,cx=0,cy=0;
+if(window.matchMedia('(hover: hover)').matches) {
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function animCur() {
+    cx += (mx-cx)*0.2; cy += (my-cy)*0.2;
+    cur.style.left = cx+'px'; cur.style.top = cy+'px';
+    requestAnimationFrame(animCur);
+  })();
+  document.querySelectorAll('.work-item,a,button').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+  });
+}
+
+
+/* ═══════════════════════════════════════════
+   SCROLL FADE-IN
+   ═══════════════════════════════════════════ */
+const fadeObs = new IntersectionObserver(entries => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting) {
+      e.target.style.opacity = '0';
+      e.target.style.transform = 'translateY(10px)';
+      e.target.style.transition = `opacity 0.5s ease ${i*0.08}s, transform 0.5s ease ${i*0.08}s`;
+      requestAnimationFrame(() => {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'none';
+      });
+      fadeObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.work-item').forEach(el => fadeObs.observe(el));
+
+
+/* ═══════════════════════════════════════════
+   NEWSLETTER DRAG + BUTTON SCROLL
+   ═══════════════════════════════════════════ */
+const track = document.getElementById('newsletterTrack');
+const cardW = () => (track.querySelector('.nl-card').offsetWidth + 16) * 2;
+
+document.getElementById('scrollLeft').addEventListener('click', () => {
+  track.scrollBy({ left: -cardW(), behavior: 'smooth' });
+});
+document.getElementById('scrollRight').addEventListener('click', () => {
+  track.scrollBy({ left: cardW(), behavior: 'smooth' });
+});
+
+let isDragging=false, startX=0, scrollStart=0, didDrag=false;
+
+track.addEventListener('mousedown', e => {
+  isDragging=true; didDrag=false;
+  startX=e.clientX; scrollStart=track.scrollLeft;
+  track.style.userSelect='none';
+});
+document.addEventListener('mousemove', e => {
+  if(!isDragging) return;
+  const dist = e.clientX - startX;
+  if(Math.abs(dist) > 5) didDrag=true;
+  if(didDrag) track.scrollLeft = scrollStart - dist;
+});
+document.addEventListener('mouseup', () => {
+  isDragging=false;
+  track.style.userSelect='';
+});
+
+track.addEventListener('click', e => {
+  if(didDrag) { e.preventDefault(); e.stopPropagation(); didDrag=false; }
+}, true);
+</script>
+</body>
+</html>
